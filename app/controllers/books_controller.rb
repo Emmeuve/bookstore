@@ -1,8 +1,9 @@
 class BooksController < ApplicationController
-  before_action :set_book, only: %i[ show edit update destroy ]
+  before_action :set_autor, set_book, only: %i[ show edit update destroy ]
 
   # GET /books or /books.json
   def index
+    @autor = Autor.find(params[:autor_id])
     @books = Book.all
   end
 
@@ -22,10 +23,9 @@ class BooksController < ApplicationController
   # POST /books or /books.json
   def create
     @book = Book.new(book_params)
-
     respond_to do |format|
       if @book.save
-        format.html { redirect_to book_url(@book), notice: "Book was successfully created." }
+        format.html { redirect_to autor_book_path(@autor.id, @book.id), notice: "Book was successfully created." }
         format.json { render :show, status: :created, location: @book }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -65,6 +65,11 @@ class BooksController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def book_params
-      params.require(:book).permit(:name)
+      params.require(:book).permit(:name, :autor_id, :publisher_id)
     end
+
+    def set_autor
+      @autor = Autor.find(params[:autor_id])
+    end
+
 end
